@@ -20,10 +20,10 @@ Galaxy Z Fold7 の開いたメイン画面を、USB 接続で Windows の拡張�
 ## 先行実装
 
 - `core/`: Android に依存しない Kotlin の Annex-B / AUD 境界解析、有限バッファ・キュー、単一セッションと無通信期限、診断値、および単体・合成映像テスト。
-- `app/`: 独立検証用であることを表示する最小 Activity。ネットワーク権限・待ち受け・デコーダーは未実装で、Android ビルドも依存取得の阻害により未確認。
+- `app/`: 独立検証用であることを表示する最小 Activity。Windows Arm64 開発環境で Lint・debug APK 生成、接続中の Fold7（Android 16）で開発用 adb 導入・説明画面の起動を確認済み。開発者モード無効時の運用は未確認で、ネットワーク権限・待ち受け・デコーダーは未実装。
 - Gradle Wrapper と依存版を固定。コアは独立した Gradle 設定を持ち、Android SDK / Google Maven なしでも検証できます。
 
-実行条件・結果・未確認範囲は [P1 独立検証記録](docs/validation-results/2026-10-18-cloud-p1.md)、開発用コマンドは[セットアップ・運用](docs/operations.md)を参照してください。
+実行条件・結果・未確認範囲は [P1 クラウド独立検証記録](docs/validation-results/2026-10-18-cloud-p1.md)と [Windows Arm64 ビルド・実機起動記録](docs/validation-results/2026-10-19-windows-arm64-p1.md)、開発用コマンドは[セットアップ・運用](docs/operations.md)を参照してください。
 
 ## ドキュメントの規則
 

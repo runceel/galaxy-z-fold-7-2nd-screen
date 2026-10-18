@@ -21,4 +21,7 @@ android {
     lint { abortOnError = true }
 }
 
-dependencyLocking { lockAllConfigurations() }
+dependencyLocking {
+    lockAllConfigurations()
+    lockMode = LockMode.STRICT
+}

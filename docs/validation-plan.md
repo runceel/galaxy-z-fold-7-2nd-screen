@@ -2,7 +2,7 @@
 
 ## 判定方針
 
-Windows / Fold 実機の実測結果はありません。自動テストで保証する処理と、Windows / Fold 実機が必要な項目を分けます。P1 の独立検証は[実装計画の例外範囲](implementation-plan.md#依存関係)だけで先行し、試験不能は成功ではなく未確認と記録します。
+Windows / Fold 実機での受信表示・性能の実測結果はありません。検証用 APK の導入・説明画面の起動確認は[環境別の記録](validation-results/2026-10-19-windows-arm64-p1.md)へ分離し、T01〜T12 の合格とは扱いません。自動テストで保証する処理と、Windows / Fold 実機が必要な項目を分けます。P1 の独立検証は[実装計画の例外範囲](implementation-plan.md#依存関係)だけで先行し、試験不能は成功ではなく未確認と記録します。
 
 参照: [要求仕様](requirements.md)、[実装計画](implementation-plan.md)。
 

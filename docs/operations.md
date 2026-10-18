@@ -2,7 +2,7 @@
 
 ## 状態
 
-実運用の準備・開始・終了は実機検証前のチェックリストです。導入方法、APK の生成コマンド、Windows 送信コマンドの確定版はまだありません。[元の引き継ぎメモ](../fold7-submonitor-handover.md)のコマンドを検証済み手順として実行しないでください。P0〜P5 で確認できた情報をこの文書へ反映します。
+実運用の準備・開始・終了は実機検証前のチェックリストです。独立検証用 debug APK の生成と開発用 adb での導入・説明画面の起動は確認済みですが、開発者モードを使用しない導入・運用手順と Windows 送信コマンドの確定版はまだありません。[元の引き継ぎメモ](../fold7-submonitor-handover.md)のコマンドを検証済み手順として実行しないでください。P0〜P5 で確認できた情報をこの文書へ反映します。
 
 ## 開発用の独立検証
 
@@ -16,7 +16,49 @@ FFMPEG=/usr/bin/ffmpeg ./gradlew -p core clean build ffmpegIntegrationTest --con
 
 `-p core` はコア専用の Gradle 設定を選び、Android SDK / Google Maven を必要としません。通常の単体テストに加え、明示指定した合成映像テストを実行します。合成映像は `core/build/fixtures/`、テスト結果は `core/build/reports/tests/` に生成され、いずれも Git 対象外です。開発用の生成物だけを削除する場合は同じ Wrapper のコア用 `clean` タスクを使用します。OS・ネットワーク設定は変更しません。
 
-実行時は依存キャッシュを使用しました。初回取得には公式 GitHub の Gradle 配布と Maven Central への接続が必要です。Windows での同等コマンド、空キャッシュからの全取得、Android の Lint・APK 生成は未確認です。Android ビルドの再試行項目は上記の検証記録を参照してください。
+実行時は依存キャッシュを使用しました。初回取得には公式 GitHub の Gradle 配布と Maven Central への接続が必要です。空キャッシュからの全取得は未確認です。Windows の FFmpeg 合成映像テストは下記の環境に限定して確認しています。
+
+### Windows Arm64 での Android ビルド
+
+[確認環境・版・残る警告](validation-results/2026-10-19-windows-arm64-p1.md)の構成に限定した開発用手順です。SDK の利用許諾と導入が承認された環境で、JDK 17、Platform 35、Build-Tools 34.0.0 を用意します。既存 SDK の権限を変更せず、必要なら書き込み可能な作業専用 SDK を使用します。
+
+PowerShell の現在のプロセスで、`JAVA_HOME` を JDK 17 のルート、`ANDROID_HOME` と `ANDROID_SDK_ROOT` を同じ SDK のルートに設定してから、リポジトリルートで実行します。システムの環境変数を永続変更する必要はありません。確認環境の既定 JDK 25 では失敗したため、既定の Java に任せません。
+
+```powershell
+.\gradlew.bat clean test lint assembleDebug --no-daemon --configuration-cache --console=plain
+```
+
+依存ロックを使用してビルドします。通常の実行に `--write-locks` は不要です。初回取得には Google Maven、Maven Central、Gradle の公式配布等への接続が必要です。取得済みキャッシュでは末尾に `--offline` を付けた実行も確認しました。`--no-daemon` は別の SDK を参照する既存 daemon の再利用を避け、ビルド後に単発プロセスを終了します。
+
+生成物は `app/build/outputs/apk/debug/app-debug.apk`、Lint 結果は `app/build/reports/` です。APK は通信権限を持たず、受信・デコード・映像表示はできません。debug 署名で、確認済みの導入・起動範囲は次節の開発用手順だけです。生成物を片付ける場合は同じ環境で `.\gradlew.bat clean --no-daemon` を使用します。環境変数の変更は PowerShell を終了すれば残りません。
+
+同じ JDK 17 で SDK を指定せずに `.\gradlew.bat -p core clean build --offline --no-daemon --configuration-cache --console=plain` も確認しました。これは通常の JVM テストだけで、FFmpeg 合成映像テストは含みません。AMD x64 PC と Fold 実機での確認を代替しません。
+
+### Windows Arm64 での FFmpeg 合成映像テスト
+
+[Windows Arm64 P0 記録](validation-results/2026-10-19-windows-arm64-p0.md)に記載した BtbN の FFmpeg 版と ZIP ハッシュで確認しました。作業専用フォルダーに展開した実行ファイルを `FFMPEG` 環境変数に設定し、上記の JDK 17 でリポジトリルートから実行します。PATH やシステム設定の変更は不要です。
+
+```powershell
+.\gradlew.bat -p core ffmpegIntegrationTest --offline --no-daemon --configuration-cache --console=plain
+```
+
+取得済みの Gradle 依存キャッシュが前提です。既存の 64×64 合成映像テストだけを実行し、生成物の保存場所・削除方法は本節冒頭の JVM コア検証と同じです。実画面や USB は使いません。対象解像度で別途行った HW / ソフトウェア圧縮の条件と制限は検証記録を参照してください。実運用の Windows 送信コマンドではありません。
+
+### 許可済み端末への開発用 APK 導入・起動
+
+上記記録の Windows Arm64 と Samsung SM-F966Q（Android 16 / API 36）、Platform-Tools 37.0.1 の adb で確認した手順です。開発用 APK の導入と USB デバッグ接続が管理ポリシー上許可され、利用者が端末側で接続を承認済みであることが前提です。禁止されている場合は実施せず、制限を回避しません。実運用の通信・診断に adb を必要とする設計にはしません。
+
+PowerShell で `$Adb` に SDK の `platform-tools\adb.exe` の絶対パス、`$Device` に確認対象の承認済み端末を設定します。複数端末がある場合も対象を明示し、端末のシリアル番号は検証記録へ保存しません。リポジトリルートで、現在の Android ユーザーを取得して導入・起動します。各コマンドが正常終了したことを確認してから次へ進みます。
+
+```powershell
+$CurrentUser = (& $Adb -s $Device shell am get-current-user).Trim()
+& $Adb -s $Device install --user $CurrentUser -r .\app\build\outputs\apk\debug\app-debug.apk
+& $Adb -s $Device shell am start --user $CurrentUser -W -n dev.fold7.validation/.MainActivity
+```
+
+説明画面の文言と、受信アプリではない旨を確認します。`Status: ok` だけで実表示成功とは扱わず、画面またはアプリ自身の UI 情報も確認します。ユーザーを指定しないパッケージ照会で別ユーザーへのアクセスを拒否された場合も、権限を広げず、現在のユーザーだけを対象とします。署名不一致・導入拒否はその場で止め、既存アプリを無断で削除しません。
+
+今回の確認後はアプリを導入・起動済みのまま残しています。終了・削除は端末の通常操作で行い、検証のために利用者が接続承認等を変更した場合は検証後に元の状態へ戻します。開発者モード無効での起動・接続・再接続（T03）は未確認です。
 
 ## 初回準備
 
@@ -28,6 +70,8 @@ FFMPEG=/usr/bin/ffmpeg ./gradlew -p core clean build ffmpegIntegrationTest --con
 6. USB テザリングのアダプターと Fold のアドレスを確認し、待ち受けを USB 側へ限定できることを確かめる。
 
 外部ドライバーにも適切な署名・導入許可が必要です。個人用 APK にも署名が必要で、更新時には署名の継続性が必要です。秘密鍵をリポジトリに置きません。
+
+Windows Arm64 の VDD 候補 25.7.23 は、[今回の環境では通常の署名検証で導入を拒否](validation-results/2026-10-19-windows-arm64-p0.md)されました。検証済みの導入手順ではありません。Authenticode が Valid という結果だけで採用せず、証明書の追加やセキュリティ設定の緩和でこの拒否を回避しません。
 
 ## ネットワーク設定の注意
 

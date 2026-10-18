@@ -14,6 +14,10 @@ Windows 側の成立性を先に確かめ、次に H.264 と Android デコー�
 
 先行する P1 の実行結果と制限は[クラウド独立検証記録](validation-results/2026-10-18-cloud-p1.md)へ記録します。P0 の Q01〜Q04・Q07・Q09 はこの検証では解消しません。
 
+2026-10-19 の [Windows Arm64 開発環境での独立検証](validation-results/2026-10-19-windows-arm64-p1.md)では Google Maven の依存解決、Android Lint、debug APK 生成・内容確認まで進みました。後続で、利用者が導入を許可した接続中の Fold7（Android 16）へ開発用 adb で導入し、説明画面の起動・再起動を確認しました。これは P0 の APK 導入確認の一部であり、開発者モード無効時の運用、P0 の残る実機確認と P1 の映像契約確定は引き続き未完了です。
+
+同日の [Windows Arm64 P0 調査](validation-results/2026-10-19-windows-arm64-p0.md)では Adreno X1-85 GPU と、合成入力に対する Qualcomm の HW H.264 圧縮を確認しました。VDD Control の通常導入は異なるアーキテクチャの選択で失敗し、正しい Arm64 INF を PnPUtil に明示した試行も 2 回とも署名検証（0x800B0109）で拒否されました。セキュリティ設定は緩和せず、この版の導入は停止しています。通常の署名条件で導入できる候補の確認と作成済みデバイスの処理、拡張画面の取り込み、USB 経路、AMD x64 PC、Q07 の合意は残っており、P0 は完了していません。
+
 ## 依存関係
 
 ```text

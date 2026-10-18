@@ -1,1 +1,5 @@
-// Plugins are resolved only in their modules, so core also builds without an Android SDK.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+}
