@@ -2,7 +2,21 @@
 
 ## 状態
 
-これは実装・実機検証前のチェックリストです。インストール方法、APK の生成コマンド、送信コマンドの確定版はまだありません。[元の引き継ぎメモ](../fold7-submonitor-handover.md)のコマンドを検証済み手順として実行しないでください。P0〜P5 で確認できた情報をこの文書へ反映します。
+実運用の準備・開始・終了は実機検証前のチェックリストです。導入方法、APK の生成コマンド、Windows 送信コマンドの確定版はまだありません。[元の引き継ぎメモ](../fold7-submonitor-handover.md)のコマンドを検証済み手順として実行しないでください。P0〜P5 で確認できた情報をこの文書へ反映します。
+
+## 開発用の独立検証
+
+次のコマンドは Linux 上の JVM コア検証用であり、Windows / Fold の運用手順ではありません。[確認環境と結果](validation-results/2026-10-18-cloud-p1.md)は Ubuntu 24.04.5 x86_64、Temurin JDK 17.0.20.1、FFmpeg 6.1.1-3ubuntu5（libx264 有効）、Wrapper の Gradle 8.11.1 です。バージョンの正はビルド設定と検証記録です。
+
+JDK 17 と libx264 を含む FFmpeg を用意し、リポジトリルートで実行します。`FFMPEG` は導入済み実行ファイルのパスです。
+
+```sh
+FFMPEG=/usr/bin/ffmpeg ./gradlew -p core clean build ffmpegIntegrationTest --configuration-cache
+```
+
+`-p core` はコア専用の Gradle 設定を選び、Android SDK / Google Maven を必要としません。通常の単体テストに加え、明示指定した合成映像テストを実行します。合成映像は `core/build/fixtures/`、テスト結果は `core/build/reports/tests/` に生成され、いずれも Git 対象外です。開発用の生成物だけを削除する場合は同じ Wrapper のコア用 `clean` タスクを使用します。OS・ネットワーク設定は変更しません。
+
+実行時は依存キャッシュを使用しました。初回取得には公式 GitHub の Gradle 配布と Maven Central への接続が必要です。Windows での同等コマンド、空キャッシュからの全取得、Android の Lint・APK 生成は未確認です。Android ビルドの再試行項目は上記の検証記録を参照してください。
 
 ## 初回準備
 
