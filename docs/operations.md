@@ -73,7 +73,7 @@ $CurrentUser = (& $Adb -s $Device shell am get-current-user).Trim()
 
 Windows Arm64 の VDD 候補 25.7.23 は、[今回の環境では通常の署名検証で導入を拒否](validation-results/2026-10-19-windows-arm64-p0.md)されました。検証済みの導入手順ではありません。Authenticode が Valid という結果だけで採用せず、証明書の追加やセキュリティ設定の緩和でこの拒否を回避しません。
 
-後続の spacedesk 導入・隔離試験は同記録へ分離しています。パッケージ導入は確認しましたが、同 PC 内の通常 Viewer 接続は未成立で、本プロジェクトへの採用や対象画面の成立は未確認です。現在はサービス停止・起動種別 Manual、元の受信許可ルールは無効で、試験用に追加した対象 EXE 限定の拒否ルール 3 件は有効です。Driver と Windows Viewer はインストール済みです。再起動後の関連 UI を含む挙動やアンインストールは未確認なので、再開・削除前に同記録の残留状態と試験範囲を確認してください。Windows ファイアウォール全体を無効化する必要はありません。
+後続の spacedesk 導入・隔離試験は同記録へ分離しています。パッケージ導入は確認しましたが、同 PC 内の通常 Viewer 接続は未成立で、本プロジェクトへの採用や対象画面の成立は未確認です。さらに別のタブレットでの Samsung Second Screen 不具合申告を受け、利用者の許可で PC 側 spacedesk の削除を開始しました。現在は Windows Viewer の削除だけが完了し、Driver の MSI は Android Control Driver の削除処理で未完了です。サービスは列挙されなくなりましたが、ドライバーと試験用拒否ルール 3 件は残っています。[復元の途中経過](validation-results/2026-10-19-windows-arm64-p0.md#後続の-samsung-second-screen-不具合申告と復元の途中経過)を参照し、削除処理を重ねて起動しないでください。再起動後の残留状態と Samsung 接続の復旧は未確認で、復旧手順として確定していません。Windows ファイアウォール全体を無効化する必要はありません。
 
 ## ネットワーク設定の注意
 
